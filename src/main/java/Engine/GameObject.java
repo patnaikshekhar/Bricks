@@ -19,6 +19,9 @@ public abstract class GameObject {
     protected int height;
     protected int width;
 
+    // Game Manager
+    protected GameManager gameManager;
+
     public abstract void update(int dt);
     public abstract void draw(Graphics2D g);
     public abstract void keyPressed(int key);
@@ -86,4 +89,12 @@ public abstract class GameObject {
     }
 
     public abstract String getType();
+
+    public GameManager getGameManager() {
+        return gameManager;
+    }
+
+    public void setGameManager(GameManager gameManager) {
+        this.gameManager = gameManager;
+    }
 }

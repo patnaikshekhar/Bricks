@@ -22,19 +22,22 @@ public class GameManager {
     }
 
     public void draw(Graphics2D g) {
-        for (GameObject object : objects) {
+        List<GameObject> objectsCopied = (List<GameObject>)((ArrayList<GameObject>) objects).clone();
+        for (GameObject object : objectsCopied) {
             object.draw(g);
         }
     }
 
     public void keyPressed(int key) {
-        for (GameObject object : objects) {
+        List<GameObject> objectsCopied = (List<GameObject>)((ArrayList<GameObject>) objects).clone();
+        for (GameObject object : objectsCopied) {
             object.keyPressed(key);
         }
     }
 
     public void add(GameObject object) {
         objects.add(object);
+        object.setGameManager(this);
     }
 
     public void remove(GameObject object) {

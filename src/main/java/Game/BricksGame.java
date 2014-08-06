@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BricksGame implements Game {
 
     // Constants
+
     // Window Constants
     private static final String GAME_TITLE = "Bricks";
     private static final int WINDOW_WIDTH = 320;
@@ -86,8 +88,10 @@ public class BricksGame implements Game {
     private static final int POWER_UP_SIZE = 10;
     private static final double POWER_UP_SPEED = 0.1;
     private static final String[] POWER_UP_TYPES = {"G", "M", "S", "B", "L", "H"};
-    private static final Color[] POWER_UP_COLOR = {Color.RED, Color.GREEN, Color.BLUE, Color.ORANGE, Color.CYAN, Color.MAGENTA};
-    private static final Color[] POWER_UP_FONT_COLOR = {Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.white };
+    private static final Color[] POWER_UP_COLOR = {Color.RED, Color.GREEN, Color.BLUE, Color.ORANGE,
+            Color.CYAN, Color.MAGENTA};
+    private static final Color[] POWER_UP_FONT_COLOR = {Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK,
+            Color.BLACK, Color.white };
     private static final Font POWER_UP_FONT = new Font("Century", Font.BOLD, 8);
     private static final int POWER_UP_CHANCE = 1;
     private static final int POWER_UP_FONT_PADDING_X = 3;
@@ -99,6 +103,10 @@ public class BricksGame implements Game {
     private static final int POWER_UP_PADDLE_DECREASE_WIDTH = PADDLE_WIDTH / 2;
     private static final int POWER_UP_BALL_INCREASE_WIDTH = BALL_WIDTH * 3;
     private static final int POWER_UP_BALL_INCREASE_HEIGHT = BALL_HEIGHT * 3;
+    private static final double POWER_UP_MULTI_BALLS_TO_ADD_VX1 = 0.15;
+    private static final double POWER_UP_MULTI_BALLS_TO_ADD_VY1 = 0.15;
+    private static final double POWER_UP_MULTI_BALLS_TO_ADD_VX2 = -0.15;
+    private static final double POWER_UP_MULTI_BALLS_TO_ADD_VY2 = -0.15;
 
     // End Constants
 
@@ -115,7 +123,7 @@ public class BricksGame implements Game {
     private Wall leftWall;
     private Wall rightWall;
     private Paddle paddle;
-    private Ball ball;
+    //private Ball ball;
     private Wall gutter;
     private Text life;
     private Text score;
@@ -215,93 +223,114 @@ public class BricksGame implements Game {
     public void update(int dt) {
         gm.update(dt);
 
-        if (ball.getRectangle().intersects(paddle.getRectangle())) {
-            // Set Ball Position
-            ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
+        List<GameObject> balls = (List<GameObject>)((ArrayList<GameObject>) gm.getObjectsOfType("Ball")).clone();
 
-            // Set Ball Velocity
-            ball.setVelocity(ball.getVx(), ball.getVy() * -1);
-        }
+        for (GameObject object : balls) {
+            Ball ball = (Ball) object;
 
-        if (ball.getRectangle().intersects(topWall.getRectangle())) {
-            // Set Ball Position
-            ball.setPosition(ball.getX(), topWall.getHeight());
+            if (ball.getRectangle().intersects(paddle.getRectangle())) {
+                // Set Ball Position
+                ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
 
-            // Set Ball Velocity
-            ball.setVelocity(ball.getVx(), ball.getVy() * -1);
-        }
+                // Set Ball Velocity
+                ball.setVelocity(ball.getVx(), ball.getVy() * -1);
+            }
 
-        if (ball.getRectangle().intersects(leftWall.getRectangle())) {
-            // Set Ball Position
-            ball.setPosition(leftWall.getX() + leftWall.getWidth(), ball.getY());
+            if (ball.getRectangle().intersects(topWall.getRectangle())) {
+                // Set Ball Position
+                ball.setPosition(ball.getX(), topWall.getHeight());
 
-            // Set Ball Velocity
-            ball.setVelocity(ball.getVx() * -1, ball.getVy());
-        }
+                // Set Ball Velocity
+                ball.setVelocity(ball.getVx(), ball.getVy() * -1);
+            }
 
-        if (ball.getRectangle().intersects(rightWall.getRectangle())) {
-            // Set Ball Position
-            ball.setPosition(rightWall.getX() - ball.getWidth(), ball.getY());
+            if (ball.getRectangle().intersects(leftWall.getRectangle())) {
+                // Set Ball Position
+                ball.setPosition(leftWall.getX() + leftWall.getWidth(), ball.getY());
 
-            // Set Ball Velocity
-            ball.setVelocity(ball.getVx() * -1, ball.getVy());
-        }
+                // Set Ball Velocity
+                ball.setVelocity(ball.getVx() * -1, ball.getVy());
+            }
 
-        List<Brick> bricksToRemove = new Vector<Brick>();
+            if (ball.getRectangle().intersects(rightWall.getRectangle())) {
+                // Set Ball Position
+                ball.setPosition(rightWall.getX() - ball.getWidth(), ball.getY());
 
-        for (Brick brick : bricks) {
-            if (ball.getRectangle().intersects(brick.getRectangle())) {
+                // Set Ball Velocity
+                ball.setVelocity(ball.getVx() * -1, ball.getVy());
+            }
 
-                // Increment Score
-                score.increment(5);
+            List<Brick> bricksToRemove = new Vector<Brick>();
 
-                // Does Ball intersect with top or bottom side
-                if (ball.getY() <= (brick.getY() + brick.getHeight()) && ball.getY() > brick.getY()) {
-                    if (ball.getVy() < 0) {
-                        // It Hit the bottom
-                        ball.setPosition(ball.getX(), brick.getY() + brick.getHeight());
-                    } else {
-                        // It hit the top
-                        ball.setPosition(ball.getX(), brick.getY() - ball.getHeight());
+            for (Brick brick : bricks) {
+
+                // If Bullet hits brick then remove
+                for (GameObject bullet: gm.getObjectsOfType("Bullet")) {
+                    if (brick.getRectangle().intersects(bullet.getRectangle())) {
+                        gm.remove(bullet);
+                        createPowerUp(brick.getX(), brick.getY());
+                        bricksToRemove.add(brick);
+                        score.increment(2);
                     }
-
-                    ball.setVelocity(ball.getVx(), ball.getVy() * -1);
                 }
 
-                // Does Ball intersect with Left or Right
-                if (ball.getX() <= (brick.getY() + brick.getWidth()) && ball.getX() > brick.getX()) {
-                    if (ball.getVx() < 0) {
-                        // It hit the right side
-                        ball.setPosition(brick.getX() + brick.getWidth(), ball.getY());
-                    } else {
-                        // It hit the left side
-                        ball.setPosition(brick.getX() - ball.getWidth(), ball.getY());
+                if (ball.getRectangle().intersects(brick.getRectangle())) {
+
+                    // Increment Score
+                    score.increment(5);
+
+                    // Does Ball intersect with top or bottom side
+                    if (ball.getY() <= (brick.getY() + brick.getHeight()) && ball.getY() > brick.getY()) {
+                        if (ball.getVy() < 0) {
+                            // It Hit the bottom
+                            ball.setPosition(ball.getX(), brick.getY() + brick.getHeight());
+                        } else {
+                            // It hit the top
+                            ball.setPosition(ball.getX(), brick.getY() - ball.getHeight());
+                        }
+
+                        ball.setVelocity(ball.getVx(), ball.getVy() * -1);
                     }
 
-                    ball.setVelocity(ball.getVx() * -1, ball.getVy());
+                    // Does Ball intersect with Left or Right
+                    if (ball.getX() <= (brick.getY() + brick.getWidth()) && ball.getX() > brick.getX()) {
+                        if (ball.getVx() < 0) {
+                            // It hit the right side
+                            ball.setPosition(brick.getX() + brick.getWidth(), ball.getY());
+                        } else {
+                            // It hit the left side
+                            ball.setPosition(brick.getX() - ball.getWidth(), ball.getY());
+                        }
+
+                        ball.setVelocity(ball.getVx() * -1, ball.getVy());
+                    }
+
+                    createPowerUp(brick.getX(), brick.getY());
+
+                    // Add brick in list of bricks to remove
+                    bricksToRemove.add(brick);
                 }
+            }
 
-                createPowerUp(brick.getX(), brick.getY());
+            for (Brick brick: bricksToRemove) {
+                bricks.remove(brick);
+                gm.remove(brick);
+            }
 
-                // Add brick in list of bricks to remove
-                bricksToRemove.add(brick);
+            if (ball.getRectangle().intersects(gutter.getRectangle())) {
+                gm.remove(ball);
+
+                if (!gm.contains("Ball")) {
+                    life.decrement();
+                    resetPositions();
+
+                    if (life.getValue() == 0) {
+                        System.exit(0);
+                    }
+                }
             }
         }
 
-        for (Brick brick: bricksToRemove) {
-            bricks.remove(brick);
-            gm.remove(brick);
-        }
-
-        if (ball.getRectangle().intersects(gutter.getRectangle())) {
-
-            life.decrement();
-            resetPositions();
-
-            if (life.getValue() == 0) {
-                System.exit(0);
-            }
-        }
 
         // Check if Power ups intersect Gutter
         for (GameObject o : gm.getObjectsOfType("PowerUp")) {
@@ -327,14 +356,26 @@ public class BricksGame implements Game {
             value -= dt;
             if (value <= 0) {
                 removePowerUp(key);
+            } else {
+                powerUpsMap.put(key, value);
             }
+        }
 
-            powerUpsMap.put(key, value);
+        // Check if bullet is out of bounds
+        for (GameObject bullet: gm.getObjectsOfType("Bullet")) {
+            if (bullet.getRectangle().intersects(topWall.getRectangle())) {
+                gm.remove(bullet);
+            }
         }
     }
 
     private void removePowerUp(String text) {
-        powerUpsMap.remove(text);
+
+        for (String key : powerUpsMap.keySet()) {
+            if (key.compareTo(text) == 0) {
+                powerUpsMap.remove(text);
+            }
+        }
 
         if (text.compareTo("G") == 0) {
             if (paddle != null) {
@@ -350,8 +391,17 @@ public class BricksGame implements Game {
 
         if (text.compareTo("L") == 0) {
             if (paddle != null) {
-                ball.setWidth(BALL_WIDTH);
-                ball.setHeight(BALL_HEIGHT);
+                for (GameObject o: gm.getObjectsOfType("Ball")) {
+                    Ball ball = (Ball) o;
+                    ball.setWidth(BALL_WIDTH);
+                    ball.setHeight(BALL_HEIGHT);
+                }
+            }
+        }
+
+        if (text.compareTo("B") == 0) {
+            if (paddle != null) {
+                paddle.deactivateGun();
             }
         }
     }
@@ -373,7 +423,8 @@ public class BricksGame implements Game {
         }
 
         if (text.compareTo("L") == 0) {
-            if (ball != null) {
+            for (GameObject o: gm.getObjectsOfType("Ball")) {
+                Ball ball = (Ball) o;
                 ball.setWidth(POWER_UP_BALL_INCREASE_WIDTH);
                 ball.setHeight(POWER_UP_BALL_INCREASE_HEIGHT);
                 powerUpsMap.put(text, POWER_UP_TIME);
@@ -382,6 +433,31 @@ public class BricksGame implements Game {
 
         if (text.compareTo("H") == 0) {
             life.increment();
+        }
+
+        if (text.compareTo("B") == 0) {
+            if (paddle != null) {
+                paddle.activateGun();
+                powerUpsMap.put(text, POWER_UP_TIME);
+            }
+        }
+
+        if (text.compareTo("M") == 0) {
+
+            List<GameObject> balls = (List<GameObject>)((ArrayList<GameObject>) gm.getObjectsOfType("Ball")).clone();
+
+            for (GameObject object : balls) {
+                Ball ball = (Ball) object;
+
+                Ball ball1 = new Ball(ball.getX(), ball.getY(), ball.getWidth(), ball.getHeight(),
+                        POWER_UP_MULTI_BALLS_TO_ADD_VX1, POWER_UP_MULTI_BALLS_TO_ADD_VY1, BALL_COLOR);
+                Ball ball2 = new Ball(ball.getX(), ball.getY(), ball.getWidth(), ball.getHeight(),
+                        POWER_UP_MULTI_BALLS_TO_ADD_VX2, POWER_UP_MULTI_BALLS_TO_ADD_VY2, BALL_COLOR);
+
+                gm.add(ball1);
+                gm.add(ball2);
+            }
+
         }
     }
 
@@ -415,13 +491,12 @@ public class BricksGame implements Game {
 
     public void resetPositions() {
 
-        if (paddle != null && ball != null) {
+        if (paddle != null) {
             gm.remove(paddle);
-            gm.remove(ball);
         }
 
         paddle = new Paddle(PADDLE_X, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_COLOR, PADDLE_SPEED);
-        ball = new Ball(BALL_START_X, BALL_START_Y, BALL_WIDTH, BALL_HEIGHT, BALL_START_VX, BALL_START_VY, BALL_COLOR);
+        Ball ball = new Ball(BALL_START_X, BALL_START_Y, BALL_WIDTH, BALL_HEIGHT, BALL_START_VX, BALL_START_VY, BALL_COLOR);
 
         gm.add(paddle);
         gm.add(ball);
