@@ -110,8 +110,16 @@ public class BricksGame implements Game {
 
     // End Constants
 
-    // Game Manager
+    // Game Managers
     private GameManager gm = new GameManager();
+
+    // Sounds
+    private static final String BRICK_SMASH_SOUND = "/sounds/brick_smash.wav";
+    private static final String POWER_UP_SOUND = "/sounds/power_up.wav";
+    private static final String PADDLE_HIT_SOUND = "/sounds/paddle_hit.wav";
+    private static final String WALL_HIT_SOUND = "/sounds/wall_hit.wav";
+
+    // Fields
     private int width;
     private int height;
     private int currentLevel = 1;
@@ -123,7 +131,6 @@ public class BricksGame implements Game {
     private Wall leftWall;
     private Wall rightWall;
     private Paddle paddle;
-    //private Ball ball;
     private Wall gutter;
     private Text life;
     private Text score;
@@ -234,6 +241,8 @@ public class BricksGame implements Game {
 
                 // Set Ball Velocity
                 ball.setVelocity(ball.getVx(), ball.getVy() * -1);
+
+                SoundManager.playSound(PADDLE_HIT_SOUND);
             }
 
             if (ball.getRectangle().intersects(topWall.getRectangle())) {
@@ -242,6 +251,8 @@ public class BricksGame implements Game {
 
                 // Set Ball Velocity
                 ball.setVelocity(ball.getVx(), ball.getVy() * -1);
+
+                SoundManager.playSound(WALL_HIT_SOUND);
             }
 
             if (ball.getRectangle().intersects(leftWall.getRectangle())) {
@@ -250,6 +261,8 @@ public class BricksGame implements Game {
 
                 // Set Ball Velocity
                 ball.setVelocity(ball.getVx() * -1, ball.getVy());
+
+                SoundManager.playSound(WALL_HIT_SOUND);
             }
 
             if (ball.getRectangle().intersects(rightWall.getRectangle())) {
@@ -258,6 +271,8 @@ public class BricksGame implements Game {
 
                 // Set Ball Velocity
                 ball.setVelocity(ball.getVx() * -1, ball.getVy());
+
+                SoundManager.playSound(WALL_HIT_SOUND);
             }
 
             List<Brick> bricksToRemove = new Vector<Brick>();
@@ -271,6 +286,7 @@ public class BricksGame implements Game {
                         createPowerUp(brick.getX(), brick.getY());
                         bricksToRemove.add(brick);
                         score.increment(2);
+                        SoundManager.playSound(BRICK_SMASH_SOUND);
                     }
                 }
 
@@ -278,6 +294,7 @@ public class BricksGame implements Game {
 
                     // Increment Score
                     score.increment(5);
+                    SoundManager.playSound(BRICK_SMASH_SOUND);
 
                     // Does Ball intersect with top or bottom side
                     if (ball.getY() <= (brick.getY() + brick.getHeight()) && ball.getY() > brick.getY()) {
@@ -407,6 +424,8 @@ public class BricksGame implements Game {
     }
 
     private void applyPowerUp(String text) {
+
+        SoundManager.playSound(POWER_UP_SOUND);
 
         if (text.compareTo("G") == 0) {
             if (paddle != null) {

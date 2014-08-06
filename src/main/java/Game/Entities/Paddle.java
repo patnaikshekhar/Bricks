@@ -1,6 +1,7 @@
 package Game.Entities;
 
 import Engine.GameObject;
+import Engine.SoundManager;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,6 +16,7 @@ public class Paddle extends GameObject {
     private static int GUN_PADDING = 4;
     private static final int GUN_WIDTH = 4;
     private static final int GUN_HEIGHT = 10;
+    private static final String GUN_FIRE_SOUND = "/sounds/gun_fire.wav";
 
     // Bullet Constants
     private static int BULLET_WIDTH = 2;
@@ -67,6 +69,7 @@ public class Paddle extends GameObject {
                 Bullet rightBullet = new Bullet(x + width - GUN_PADDING + GUN_WIDTH / 2, y - GUN_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED, BULLET_COLOR);
                 this.gameManager.add(leftBullet);
                 this.gameManager.add(rightBullet);
+                SoundManager.playSound(GUN_FIRE_SOUND);
             }
         }
     }

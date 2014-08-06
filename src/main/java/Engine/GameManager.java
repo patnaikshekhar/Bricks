@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class GameManager {
 
-    List<GameObject> objects;
+    private List<GameObject> objects;
 
     public GameManager() {
         objects = new ArrayList<GameObject>();
@@ -69,4 +69,6 @@ public class GameManager {
 
         return results;
     }
+
+
 }
