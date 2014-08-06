@@ -54,4 +54,16 @@ public class GameManager {
 
         return false;
     }
+
+    public List<GameObject> getObjectsOfType(String type) {
+        List<GameObject> results = new ArrayList<GameObject>();
+
+        for (GameObject object : objects) {
+            if (object.getType().compareTo(type) == 0) {
+                results.add(object);
+            }
+        }
+
+        return results;
+    }
 }

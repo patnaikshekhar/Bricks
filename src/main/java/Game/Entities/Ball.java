@@ -30,7 +30,7 @@ public class Ball extends GameObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.fillRect(x, y, width, height);
+        g.fillOval(x, y, width, height);
     }
 
     @Override

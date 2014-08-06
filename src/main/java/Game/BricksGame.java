@@ -1,8 +1,6 @@
 package Game;
 
-import Engine.Game;
-import Engine.GameManager;
-import Engine.GameWindow;
+import Engine.*;
 import Game.Entities.*;
 
 import java.awt.*;
@@ -11,7 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by shpatnaik on 8/5/14.
@@ -52,8 +52,8 @@ public class BricksGame implements Game {
     private static final Color[] BRICK_COLOR = {Color.BLUE, Color.CYAN, Color.GREEN, Color.ORANGE};
 
     // Ball Constants
-    private static final int BALL_WIDTH = 4;
-    private static final int BALL_HEIGHT = 4;
+    private static final int BALL_WIDTH = 5;
+    private static final int BALL_HEIGHT = 5;
     private static final int BALL_START_X = 100;
     private static final int BALL_START_Y = 160;
     private static final Color BALL_COLOR = Color.ORANGE;
@@ -82,6 +82,24 @@ public class BricksGame implements Game {
     private static final int SCORE_START  = 0;
     private static final String SCORE_LABEL = "Score";
 
+    // Power Up
+    private static final int POWER_UP_SIZE = 10;
+    private static final double POWER_UP_SPEED = 0.1;
+    private static final String[] POWER_UP_TYPES = {"G", "M", "S", "B", "L", "H"};
+    private static final Color[] POWER_UP_COLOR = {Color.RED, Color.GREEN, Color.BLUE, Color.ORANGE, Color.CYAN, Color.MAGENTA};
+    private static final Color[] POWER_UP_FONT_COLOR = {Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK, Color.white };
+    private static final Font POWER_UP_FONT = new Font("Century", Font.BOLD, 8);
+    private static final int POWER_UP_CHANCE = 1;
+    private static final int POWER_UP_FONT_PADDING_X = 3;
+    private static final int POWER_UP_FONT_PADDING_Y = 8;
+    private static final long POWER_UP_TIME = 10000;
+
+    // Power Up Specific
+    private static final int POWER_UP_PADDLE_INCREASE_WIDTH = PADDLE_WIDTH * 2;
+    private static final int POWER_UP_PADDLE_DECREASE_WIDTH = PADDLE_WIDTH / 2;
+    private static final int POWER_UP_BALL_INCREASE_WIDTH = BALL_WIDTH * 3;
+    private static final int POWER_UP_BALL_INCREASE_HEIGHT = BALL_HEIGHT * 3;
+
     // End Constants
 
     // Game Manager
@@ -101,6 +119,10 @@ public class BricksGame implements Game {
     private Wall gutter;
     private Text life;
     private Text score;
+
+    // Power up Map - Contains a list of power ups and the time
+    // They are active for
+    Map<String, Long> powerUpsMap = new ConcurrentHashMap<String, Long>();
 
     public static void main(String[] args) {
         GameWindow.show(new BricksGame(), GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_SCALE);
@@ -139,8 +161,6 @@ public class BricksGame implements Game {
 
         // Load Bricks definition file for Level
         loadFile("/levels/Level-" + level + ".txt");
-
-        // Add Objects to GameManager
 
         // Add Bricks
         for (Brick b: bricks) {
@@ -261,6 +281,8 @@ public class BricksGame implements Game {
                     ball.setVelocity(ball.getVx() * -1, ball.getVy());
                 }
 
+                createPowerUp(brick.getX(), brick.getY());
+
                 // Add brick in list of bricks to remove
                 bricksToRemove.add(brick);
             }
@@ -281,10 +303,98 @@ public class BricksGame implements Game {
             }
         }
 
+        // Check if Power ups intersect Gutter
+        for (GameObject o : gm.getObjectsOfType("PowerUp")) {
+            if (o.getRectangle().intersects(gutter.getRectangle())) {
+                gm.remove(o);
+            }
+
+            if (o.getRectangle().intersects(paddle.getRectangle())) {
+                gm.remove(o);
+                applyPowerUp(((PowerUp)o).getText());
+            }
+        }
+
         // If not bricks are present then change level
         if (bricks.isEmpty()) {
             currentLevel += 1;
             startLevel(currentLevel);
+        }
+
+        // Check if the power ups have expired
+        for (String key: powerUpsMap.keySet()) {
+            long value = powerUpsMap.get(key);
+            value -= dt;
+            if (value <= 0) {
+                removePowerUp(key);
+            }
+
+            powerUpsMap.put(key, value);
+        }
+    }
+
+    private void removePowerUp(String text) {
+        powerUpsMap.remove(text);
+
+        if (text.compareTo("G") == 0) {
+            if (paddle != null) {
+                paddle.setWidth(PADDLE_WIDTH);
+            }
+        }
+
+        if (text.compareTo("S") == 0) {
+            if (paddle != null) {
+                paddle.setWidth(PADDLE_WIDTH);
+            }
+        }
+
+        if (text.compareTo("L") == 0) {
+            if (paddle != null) {
+                ball.setWidth(BALL_WIDTH);
+                ball.setHeight(BALL_HEIGHT);
+            }
+        }
+    }
+
+    private void applyPowerUp(String text) {
+
+        if (text.compareTo("G") == 0) {
+            if (paddle != null) {
+                paddle.setWidth(POWER_UP_PADDLE_INCREASE_WIDTH);
+                powerUpsMap.put(text, POWER_UP_TIME);
+            }
+        }
+
+        if (text.compareTo("S") == 0) {
+            if (paddle != null) {
+                paddle.setWidth(POWER_UP_PADDLE_DECREASE_WIDTH);
+                powerUpsMap.put(text, POWER_UP_TIME);
+            }
+        }
+
+        if (text.compareTo("L") == 0) {
+            if (ball != null) {
+                ball.setWidth(POWER_UP_BALL_INCREASE_WIDTH);
+                ball.setHeight(POWER_UP_BALL_INCREASE_HEIGHT);
+                powerUpsMap.put(text, POWER_UP_TIME);
+            }
+        }
+
+        if (text.compareTo("H") == 0) {
+            life.increment();
+        }
+    }
+
+    private void createPowerUp(int x, int y) {
+        if (Utilities.randomNumber(1, POWER_UP_CHANCE) == 1) {
+            int powerUpType = Utilities.randomNumber(0, POWER_UP_TYPES.length - 1);
+
+            PowerUp p = new PowerUp(x, y, POWER_UP_SIZE, POWER_UP_SPEED,
+                    POWER_UP_TYPES[powerUpType], POWER_UP_FONT_COLOR[powerUpType],
+                    POWER_UP_COLOR[powerUpType], POWER_UP_FONT,
+                    POWER_UP_FONT_PADDING_X, POWER_UP_FONT_PADDING_Y);
+
+            gm.add(p);
         }
     }
 
