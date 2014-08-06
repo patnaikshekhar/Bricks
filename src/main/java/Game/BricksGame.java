@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -61,6 +60,28 @@ public class BricksGame implements Game {
     private static final double BALL_START_VX = 0.1;
     private static final double BALL_START_VY = 0.1;
 
+    // Gutter Constants
+    private static final int GUTTER_WIDTH = WINDOW_WIDTH;
+    private static final int GUTTER_HEIGHT = 5;
+    private static final int GUTTER_START_X = 0;
+    private static final int GUTTER_START_Y = WINDOW_HEIGHT - GUTTER_HEIGHT;
+
+    // Life
+    private static final int LIFE_X = WINDOW_WIDTH - WALL_WIDTH - 40;
+    private static final int LIFE_Y = WALL_HEIGHT + 10;
+    private static final Color LIFE_COLOR = Color.WHITE;
+    private static final Font LIFE_FONT = new Font("Century Gothic", Font.PLAIN, 9);
+    private static final int LIFE_START  = 3;
+    private static final String LIFE_LABEL = "Lives";
+
+    // Score
+    private static final int SCORE_X = WALL_WIDTH + 10;
+    private static final int SCORE_Y = WALL_HEIGHT + 10;
+    private static final Color SCORE_COLOR = Color.WHITE;
+    private static final Font SCORE_FONT = new Font("Century Gothic", Font.PLAIN, 9);
+    private static final int SCORE_START  = 0;
+    private static final String SCORE_LABEL = "Score";
+
     // End Constants
 
     // Game Manager
@@ -77,6 +98,9 @@ public class BricksGame implements Game {
     private Wall rightWall;
     private Paddle paddle;
     private Ball ball;
+    private Wall gutter;
+    private Text life;
+    private Text score;
 
     public static void main(String[] args) {
         GameWindow.show(new BricksGame(), GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_SCALE);
@@ -89,38 +113,39 @@ public class BricksGame implements Game {
 
         // Instantiate Objects
         background = new Background(width, height, BACKGROUND_COLOR);
+        gm.add(background);
 
-        topWall = new Wall(0, 0, width, WALL_HEIGHT, WALL_COLOR);
-        leftWall = new Wall(0, WALL_HEIGHT, WALL_WIDTH, height - WALL_HEIGHT, WALL_COLOR);
-        rightWall = new Wall(width - WALL_WIDTH, WALL_HEIGHT, WALL_WIDTH, height - WALL_HEIGHT, WALL_COLOR);
+        topWall = new Wall(0, 0, width, WALL_HEIGHT, WALL_COLOR, true);
+        leftWall = new Wall(0, WALL_HEIGHT, WALL_WIDTH, height - WALL_HEIGHT, WALL_COLOR, true);
+        rightWall = new Wall(width - WALL_WIDTH, WALL_HEIGHT, WALL_WIDTH, height - WALL_HEIGHT, WALL_COLOR, true);
+        gm.add(topWall);
+        gm.add(leftWall);
+        gm.add(rightWall);
 
-        paddle = new Paddle(PADDLE_X, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_COLOR, PADDLE_SPEED);
+        // Create Paddle and Ball
+        resetPositions();
 
-        ball = new Ball(BALL_START_X, BALL_START_Y, BALL_WIDTH, BALL_HEIGHT, BALL_START_VX, BALL_START_VY, BALL_COLOR);
+        // Add Gutter
+        gutter = new Wall(GUTTER_START_X, GUTTER_START_Y, GUTTER_WIDTH, GUTTER_HEIGHT, WALL_COLOR, false);
+        gm.add(gutter);
+
+        // Add Life Text
+        life = new Text(LIFE_X, LIFE_Y, LIFE_LABEL, LIFE_START, LIFE_COLOR, LIFE_FONT);
+        gm.add(life);
+
+        // Add Score Text
+        score = new Text(SCORE_X, SCORE_Y, SCORE_LABEL, SCORE_START, SCORE_COLOR, SCORE_FONT);
+        gm.add(score);
 
         // Load Bricks definition file for Level
         loadFile("/levels/Level-" + level + ".txt");
 
         // Add Objects to GameManager
 
-        // Add Background
-        gm.add(background);
-
-        // Add Walls
-        gm.add(topWall);
-        gm.add(leftWall);
-        gm.add(rightWall);
-
         // Add Bricks
         for (Brick b: bricks) {
             gm.add(b);
         }
-
-        // Add Paddle
-        gm.add(paddle);
-
-        // Add Ball
-        gm.add(ball);
     }
 
     private void loadFile(String fileName) {
@@ -207,6 +232,9 @@ public class BricksGame implements Game {
         for (Brick brick : bricks) {
             if (ball.getRectangle().intersects(brick.getRectangle())) {
 
+                // Increment Score
+                score.increment(5);
+
                 // Does Ball intersect with top or bottom side
                 if (ball.getY() <= (brick.getY() + brick.getHeight()) && ball.getY() > brick.getY()) {
                     if (ball.getVy() < 0) {
@@ -243,8 +271,18 @@ public class BricksGame implements Game {
             gm.remove(brick);
         }
 
+        if (ball.getRectangle().intersects(gutter.getRectangle())) {
+
+            life.decrement();
+            resetPositions();
+
+            if (life.getValue() == 0) {
+                System.exit(0);
+            }
+        }
+
         // If not bricks are present then change level
-        if (!gm.contains("Brick")) {
+        if (bricks.isEmpty()) {
             currentLevel += 1;
             startLevel(currentLevel);
         }
@@ -263,5 +301,19 @@ public class BricksGame implements Game {
         if (paddle.getRectangle().intersects(rightWall.getRectangle())) {
             paddle.setPosition(rightWall.getX() - paddle.getWidth(), paddle.getY());
         }
+    }
+
+    public void resetPositions() {
+
+        if (paddle != null && ball != null) {
+            gm.remove(paddle);
+            gm.remove(ball);
+        }
+
+        paddle = new Paddle(PADDLE_X, PADDLE_Y, PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_COLOR, PADDLE_SPEED);
+        ball = new Ball(BALL_START_X, BALL_START_Y, BALL_WIDTH, BALL_HEIGHT, BALL_START_VX, BALL_START_VY, BALL_COLOR);
+
+        gm.add(paddle);
+        gm.add(ball);
     }
 }

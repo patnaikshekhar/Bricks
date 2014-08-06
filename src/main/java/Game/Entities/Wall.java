@@ -10,13 +10,15 @@ import java.awt.*;
 public class Wall extends GameObject {
 
     private final Color color;
+    private final Boolean draw;
 
-    public Wall(int x, int y, int width, int height, Color color) {
+    public Wall(int x, int y, int width, int height, Color color, Boolean draw) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.color = color;
+        this.draw = draw;
     }
 
     @Override
@@ -26,8 +28,10 @@ public class Wall extends GameObject {
 
     @Override
     public void draw(Graphics2D g) {
-        g.setColor(color);
-        g.fillRect(x, y, width, height);
+        if (draw) {
+            g.setColor(color);
+            g.fillRect(x, y, width, height);
+        }
     }
 
     @Override
