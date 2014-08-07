@@ -54,8 +54,8 @@ public class BricksGame implements Game {
     private static final Color[] BRICK_COLOR = {Color.BLUE, Color.CYAN, Color.GREEN, Color.ORANGE};
 
     // Ball Constants
-    private static final int BALL_WIDTH = 5;
-    private static final int BALL_HEIGHT = 5;
+    private static final int BALL_WIDTH = 10;
+    private static final int BALL_HEIGHT = 10;
     private static final int BALL_START_X = 100;
     private static final int BALL_START_Y = 160;
     private static final Color BALL_COLOR = Color.ORANGE;
@@ -118,6 +118,9 @@ public class BricksGame implements Game {
     private static final String POWER_UP_SOUND = "/sounds/power_up.wav";
     private static final String PADDLE_HIT_SOUND = "/sounds/paddle_hit.wav";
     private static final String WALL_HIT_SOUND = "/sounds/wall_hit.wav";
+    private static final String GUN_FIRE_SOUND = "/sounds/gun_fire.wav";
+    private static final String[] ALL_SOUNDS = { BRICK_SMASH_SOUND, POWER_UP_SOUND, PADDLE_HIT_SOUND, WALL_HIT_SOUND,
+            GUN_FIRE_SOUND };
 
     // Fields
     private int width;
@@ -217,6 +220,9 @@ public class BricksGame implements Game {
     public void init(int width, int height) {
         this.height = height;
         this.width = width;
+
+        // Pre load sounds
+        SoundManager.loadSounds(ALL_SOUNDS);
 
         startLevel(currentLevel);
     }

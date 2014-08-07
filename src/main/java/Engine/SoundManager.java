@@ -1,9 +1,6 @@
 package Engine;
 
 import javax.sound.sampled.*;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,19 +9,37 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SoundManager {
 
+    public static final Map<String, Clip> soundCache = new ConcurrentHashMap<String, Clip>();
+
     public SoundManager() {
     }
 
-    public static void playSound(String name) {
+    public static void loadSounds(String[] names) {
+        for (String name : names) {
+            loadSound(name);
+        }
+    }
 
+    public static void loadSound(String name) {
         try {
             Clip clip = AudioSystem.getClip();
             AudioInputStream inputStream = AudioSystem.getAudioInputStream(
                     SoundManager.class.getResourceAsStream(name));
             clip.open(inputStream);
-            clip.loop(0);
+            soundCache.put(name, clip);
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void playSound(String name) {
+
+        if (!soundCache.containsKey(name)) {
+            loadSound(name);
+        }
+
+        Clip clip = soundCache.get(name);
+        clip.setFramePosition(0);
+        clip.loop(0);
     }
 }
