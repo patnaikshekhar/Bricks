@@ -258,7 +258,9 @@ public class BricksGame implements Game {
                 ball.setPosition(ball.getX(), paddle.getY() - ball.getHeight());
 
                 // Set Ball Velocity
-                ball.setVelocity(ball.getVx(), ball.getVy() * -1);
+                //ball.setVelocity(ball.getVx(), ball.getVy() * -1);
+                Utilities.Vector bounceVector = calculateBounceVector(ball);
+                ball.setVelocity(bounceVector.x, bounceVector.y);
 
                 SoundManager.playSound(PADDLE_HIT_SOUND, 0);
             }
@@ -537,5 +539,13 @@ public class BricksGame implements Game {
 
         gm.add(paddle);
         gm.add(ball);
+    }
+
+    public Utilities.Vector calculateBounceVector(Ball ball) {
+        double paddleCenterX = paddle.getX() + paddle.getWidth() / 2;
+        double paddleCenterY = paddle.getY() + paddle.getHeight() / 2;
+        double magnitude = new Utilities.Vector(ball.getVx(), ball.getVy()).magnitude();
+
+        return new Utilities.Vector(ball.getX() -  paddleCenterX, ball.getY() - paddleCenterY).unit().multiply(magnitude);
     }
 }
