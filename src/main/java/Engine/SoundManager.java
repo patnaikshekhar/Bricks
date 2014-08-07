@@ -32,7 +32,7 @@ public class SoundManager {
         }
     }
 
-    public static void playSound(String name) {
+    public static void playSound(String name, int loop) {
 
         if (!soundCache.containsKey(name)) {
             loadSound(name);
@@ -40,6 +40,6 @@ public class SoundManager {
 
         Clip clip = soundCache.get(name);
         clip.setFramePosition(0);
-        clip.loop(0);
+        clip.loop(loop);
     }
 }

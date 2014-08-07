@@ -69,7 +69,7 @@ public class Paddle extends GameObject {
                 Bullet rightBullet = new Bullet(x + width - GUN_PADDING + GUN_WIDTH / 2, y - GUN_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED, BULLET_COLOR);
                 this.gameManager.add(leftBullet);
                 this.gameManager.add(rightBullet);
-                SoundManager.playSound(GUN_FIRE_SOUND);
+                SoundManager.playSound(GUN_FIRE_SOUND, 0);
             }
         }
     }
