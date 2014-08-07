@@ -156,6 +156,24 @@ public class BricksGame implements Game {
         background = new Background(width, height, BACKGROUND_COLOR);
         gm.add(background);
 
+        // Add Life Text
+        if (life != null) {
+            life = new Text(LIFE_X, LIFE_Y, LIFE_LABEL, life.getValue(), LIFE_COLOR, LIFE_FONT);
+        } else {
+            life = new Text(LIFE_X, LIFE_Y, LIFE_LABEL, LIFE_START, LIFE_COLOR, LIFE_FONT);
+        }
+
+        gm.add(life);
+
+        // Add Score Text
+        if (score != null) {
+            score = new Text(SCORE_X, SCORE_Y, SCORE_LABEL, score.getValue(), SCORE_COLOR, SCORE_FONT);
+        } else {
+            score = new Text(SCORE_X, SCORE_Y, SCORE_LABEL, SCORE_START, SCORE_COLOR, SCORE_FONT);
+        }
+
+        gm.add(score);
+
         topWall = new Wall(0, 0, width, WALL_HEIGHT, WALL_COLOR, true);
         leftWall = new Wall(0, WALL_HEIGHT, WALL_WIDTH, height - WALL_HEIGHT, WALL_COLOR, true);
         rightWall = new Wall(width - WALL_WIDTH, WALL_HEIGHT, WALL_WIDTH, height - WALL_HEIGHT, WALL_COLOR, true);
@@ -169,14 +187,6 @@ public class BricksGame implements Game {
         // Add Gutter
         gutter = new Wall(GUTTER_START_X, GUTTER_START_Y, GUTTER_WIDTH, GUTTER_HEIGHT, WALL_COLOR, false);
         gm.add(gutter);
-
-        // Add Life Text
-        life = new Text(LIFE_X, LIFE_Y, LIFE_LABEL, LIFE_START, LIFE_COLOR, LIFE_FONT);
-        gm.add(life);
-
-        // Add Score Text
-        score = new Text(SCORE_X, SCORE_Y, SCORE_LABEL, SCORE_START, SCORE_COLOR, SCORE_FONT);
-        gm.add(score);
 
         // Load Bricks definition file for Level
         loadFile("/levels/Level-" + level + ".txt");
