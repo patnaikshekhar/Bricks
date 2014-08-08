@@ -36,11 +36,11 @@ public abstract class GameObject {
         this.vy = vy;
     }
 
-    public Utilities.Vector getVelocity() {
-        return (new Utilities.Vector(vx, vy));
+    public Vector2 getVelocity() {
+        return (new Vector2(vx, vy));
     }
 
-    public void setVelocity(Utilities.Vector vector) {
+    public void setVelocity(Vector2 vector) {
         this.vx = vector.x;
         this.vy = vector.y;
     }

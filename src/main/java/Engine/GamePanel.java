@@ -11,7 +11,6 @@ import java.awt.image.BufferedImage;
  */
 public class GamePanel extends JPanel implements KeyListener, Runnable {
 
-
     // Dimentions
     private int width;
     private int height;
@@ -28,16 +27,18 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
     Game game;
 
     // FPS
-    private static final int FPS = 60;
-    private static final long TARGET_TIME = 1000 / FPS;
+    private final int fps;
+    private long targetTime;
 
-    public GamePanel(Game game, int width, int height, int scale) {
+    public GamePanel(Game game, int width, int height, int scale, int fps) {
         super();
 
         this.game = game;
         this.width = width;
         this.height = height;
         this.scale = scale;
+        this.fps = fps;
+        this.targetTime = 1000 / this.fps;
 
         setPreferredSize(new Dimension(width * scale, height * scale));
         setFocusable(true);
@@ -64,7 +65,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
 
     @Override
     public void keyReleased(KeyEvent e) {
-
+        game.keyReleased(e.getKeyCode());
     }
 
     public void init() {
@@ -93,7 +94,7 @@ public class GamePanel extends JPanel implements KeyListener, Runnable {
             drawToScreen();
 
             elapsed = System.nanoTime() - start;
-            wait = TARGET_TIME - (elapsed / 1000000);
+            wait = targetTime - (elapsed / 1000000);
 
             if (wait > 0) {
                 try {

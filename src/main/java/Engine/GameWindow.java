@@ -7,9 +7,9 @@ import javax.swing.*;
  */
 public class GameWindow {
 
-    public static void show(Game game, String title, int width, int height, int scale) {
+    public static void show(Game game, String title, int width, int height, int scale, int fps) {
         JFrame window = new JFrame(title);
-        window.setContentPane(new GamePanel(game, width, height, scale));
+        window.setContentPane(new GamePanel(game, width, height, scale, fps));
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
         window.pack();

@@ -23,6 +23,7 @@ public class BricksGame implements Game {
 
     // Window Constants
     private static final String GAME_TITLE = "Bricks";
+    private static final int FPS = 60;
     private static final int WINDOW_WIDTH = 320;
     private static final int WINDOW_HEIGHT = 240;
     private static final int WINDOW_SCALE = 2;
@@ -52,8 +53,8 @@ public class BricksGame implements Game {
     private static final int BRICK_BORDER_SIZE = 1;
     private static final Color BRICK_BORDER_COLOR = Color.black;
     private static final Color[] BRICK_COLOR = {Color.BLUE, Color.CYAN, Color.GREEN, Color.ORANGE};
-    private static final Utilities.Vector BRICK_COLLISION_VECTOR_TOP_BOTTOM = new Utilities.Vector(0, 2);
-    private static final Utilities.Vector BRICK_COLLISION_VECTOR_SIDES = new Utilities.Vector(2, 0);
+    private static final Vector2 BRICK_COLLISION_VECTOR_TOP_BOTTOM = new Vector2(0, 2);
+    private static final Vector2 BRICK_COLLISION_VECTOR_SIDES = new Vector2(2, 0);
 
     // Ball Constants
     private static final int BALL_WIDTH = 10;
@@ -146,7 +147,7 @@ public class BricksGame implements Game {
     Map<String, Long> powerUpsMap = new ConcurrentHashMap<String, Long>();
 
     public static void main(String[] args) {
-        GameWindow.show(new BricksGame(), GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_SCALE);
+        GameWindow.show(new BricksGame(), GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_SCALE, FPS);
     }
 
     public void startLevel(int level) {
@@ -261,7 +262,7 @@ public class BricksGame implements Game {
 
                 // Set Ball Velocity
                 //ball.setVelocity(ball.getVx(), ball.getVy() * -1);
-                Utilities.Vector bounceVector = calculateBounceVector(ball);
+                Vector2 bounceVector = calculateBounceVector(ball);
                 ball.setVelocity(bounceVector.x, bounceVector.y);
 
                 SoundManager.playSound(PADDLE_HIT_SOUND, 0);
@@ -530,6 +531,11 @@ public class BricksGame implements Game {
         }
     }
 
+    @Override
+    public void keyReleased(int keyCode) {
+        // Do Nothing
+    }
+
     public void resetPositions() {
 
         if (paddle != null) {
@@ -543,11 +549,11 @@ public class BricksGame implements Game {
         gm.add(ball);
     }
 
-    public Utilities.Vector calculateBounceVector(Ball ball) {
+    public Vector2 calculateBounceVector(Ball ball) {
         double paddleCenterX = paddle.getX() + paddle.getWidth() / 2;
         double paddleCenterY = paddle.getY() + paddle.getHeight() / 2;
-        double magnitude = new Utilities.Vector(ball.getVx(), ball.getVy()).magnitude();
+        double magnitude = new Vector2(ball.getVx(), ball.getVy()).magnitude();
 
-        return new Utilities.Vector(ball.getX() -  paddleCenterX, ball.getY() - paddleCenterY).unit().multiply(magnitude);
+        return new Vector2(ball.getX() -  paddleCenterX, ball.getY() - paddleCenterY).unit().multiply(magnitude);
     }
 }
