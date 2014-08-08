@@ -52,6 +52,8 @@ public class BricksGame implements Game {
     private static final int BRICK_BORDER_SIZE = 1;
     private static final Color BRICK_BORDER_COLOR = Color.black;
     private static final Color[] BRICK_COLOR = {Color.BLUE, Color.CYAN, Color.GREEN, Color.ORANGE};
+    private static final Utilities.Vector BRICK_COLLISION_VECTOR_TOP_BOTTOM = new Utilities.Vector(0, 2);
+    private static final Utilities.Vector BRICK_COLLISION_VECTOR_SIDES = new Utilities.Vector(2, 0);
 
     // Ball Constants
     private static final int BALL_WIDTH = 10;
@@ -500,7 +502,7 @@ public class BricksGame implements Game {
         }
     }
 
-    private void createPowerUp(int x, int y) {
+    private void createPowerUp(double x, double y) {
         if (Utilities.randomNumber(1, POWER_UP_CHANCE) == 1) {
             int powerUpType = Utilities.randomNumber(0, POWER_UP_TYPES.length - 1);
 

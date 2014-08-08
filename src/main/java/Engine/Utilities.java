@@ -26,8 +26,24 @@ public class Utilities {
             return new Vector((x / magnitude()), (y / magnitude()));
         }
 
+        public Vector add(Vector b) {
+            return new Vector(this.x + b.x, this.y + b.y);
+        }
+
         public Vector multiply(double s) {
             return new Vector(s * x, s * y);
+        }
+
+        public double dotProduct(Vector b) {
+            return (this.x * b.x) + (this.y * b.y);
+        }
+
+        public double angleBetweenVectors(Vector b) {
+            return Math.acos(this.dotProduct(b) / (this.magnitude() * b.magnitude()));
+        }
+
+        public String toString() {
+            return "(" + this.x + ", " + this.y + ")";
         }
     }
 

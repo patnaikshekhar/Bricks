@@ -12,7 +12,7 @@ public class Wall extends GameObject {
     private final Color color;
     private final Boolean draw;
 
-    public Wall(int x, int y, int width, int height, Color color, Boolean draw) {
+    public Wall(double x, double y, int width, int height, Color color, Boolean draw) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -30,7 +30,7 @@ public class Wall extends GameObject {
     public void draw(Graphics2D g) {
         if (draw) {
             g.setColor(color);
-            g.fillRect(x, y, width, height);
+            g.fillRect((int)x, (int)y, width, height);
         }
     }
 

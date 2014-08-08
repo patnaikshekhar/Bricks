@@ -11,7 +11,7 @@ public class Bullet extends GameObject {
 
     private final Color color;
 
-    public Bullet(int x, int y, int width, int height, double vy, Color color) {
+    public Bullet(double x, double y, int width, int height, double vy, Color color) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -28,7 +28,7 @@ public class Bullet extends GameObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.fillRect(x, y, width, height);
+        g.fillRect((int)x, (int)y, width, height);
     }
 
     @Override

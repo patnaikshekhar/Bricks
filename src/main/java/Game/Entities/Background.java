@@ -28,7 +28,7 @@ public class Background extends GameObject {
     public void draw(Graphics2D g) {
         // Draw background
         g.setColor(color);
-        g.fillRect(x, y, width, height);
+        g.fillRect((int)x, (int)y, width, height);
     }
 
     @Override

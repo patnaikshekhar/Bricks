@@ -17,7 +17,7 @@ public class PowerUp extends GameObject {
     private final int fontPaddingX;
     private final int fontPaddingY;
 
-    public PowerUp(int x, int y, int size, double speed, String text, Color fontColor, Color color, Font font, int fontPaddingX, int fontPaddingY) {
+    public PowerUp(double x, double y, int size, double speed, String text, Color fontColor, Color color, Font font, int fontPaddingX, int fontPaddingY) {
         this.x = x;
         this.y = y;
         this.width = size;
@@ -41,10 +41,10 @@ public class PowerUp extends GameObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.fillOval(x, y, width, height);
+        g.fillOval((int)x, (int)y, width, height);
         g.setColor(fontColor);
         g.setFont(font);
-        g.drawString(text, x + fontPaddingX, y + fontPaddingY);
+        g.drawString(text, (int)x + fontPaddingX, (int)y + fontPaddingY);
     }
 
     @Override

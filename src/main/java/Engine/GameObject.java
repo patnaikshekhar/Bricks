@@ -8,8 +8,8 @@ import java.awt.*;
 public abstract class GameObject {
 
     // Position Vector
-    protected int x;
-    protected int y;
+    protected double x;
+    protected double y;
 
     // Velocity Vector
     protected double vx;
@@ -26,7 +26,7 @@ public abstract class GameObject {
     public abstract void draw(Graphics2D g);
     public abstract void keyPressed(int key);
 
-    public void setPosition(int x, int y) {
+    public void setPosition(double x, double y) {
         this.x = x;
         this.y = y;
     }
@@ -34,6 +34,15 @@ public abstract class GameObject {
     public void setVelocity(double vx, double vy) {
         this.vx = vx;
         this.vy = vy;
+    }
+
+    public Utilities.Vector getVelocity() {
+        return (new Utilities.Vector(vx, vy));
+    }
+
+    public void setVelocity(Utilities.Vector vector) {
+        this.vx = vector.x;
+        this.vy = vector.y;
     }
 
     public double getVx() {
@@ -44,11 +53,11 @@ public abstract class GameObject {
         return vy;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
@@ -60,11 +69,11 @@ public abstract class GameObject {
         return width;
     }
 
-    public void setX(int x) {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(double y) {
         this.y = y;
     }
 
@@ -85,7 +94,7 @@ public abstract class GameObject {
     }
 
     public Rectangle getRectangle() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle((int)x, (int)y, width, height);
     }
 
     public abstract String getType();

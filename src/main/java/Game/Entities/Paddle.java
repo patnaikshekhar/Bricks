@@ -28,7 +28,7 @@ public class Paddle extends GameObject {
     private final int speed;
     private boolean gunsActive = false;
 
-    public Paddle(int x, int y, int width, int height, Color color, int speed) {
+    public Paddle(double x, double y, int width, int height, Color color, int speed) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -45,12 +45,12 @@ public class Paddle extends GameObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.fillOval(x, y, width, height);
+        g.fillOval((int)x, (int)y, width, height);
 
         if (gunsActive) {
             g.setColor(GUN_COLOR);
-            g.fillRect(x + GUN_PADDING, y - GUN_HEIGHT, GUN_WIDTH, GUN_HEIGHT);
-            g.fillRect(x + width - GUN_PADDING - GUN_WIDTH, y - GUN_HEIGHT, GUN_WIDTH, GUN_HEIGHT);
+            g.fillRect((int)x + GUN_PADDING, (int)y - GUN_HEIGHT, GUN_WIDTH, GUN_HEIGHT);
+            g.fillRect((int)x + width - GUN_PADDING - GUN_WIDTH, (int)y - GUN_HEIGHT, GUN_WIDTH, GUN_HEIGHT);
         }
     }
 
@@ -65,8 +65,8 @@ public class Paddle extends GameObject {
         if (gunsActive) {
             if (key == KeyEvent.VK_SPACE) {
                 // Add Bullets
-                Bullet leftBullet = new Bullet(x + GUN_PADDING + GUN_WIDTH / 2, y - GUN_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED, BULLET_COLOR);
-                Bullet rightBullet = new Bullet(x + width - GUN_PADDING + GUN_WIDTH / 2, y - GUN_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED, BULLET_COLOR);
+                Bullet leftBullet = new Bullet((int)x + GUN_PADDING + GUN_WIDTH / 2, (int)y - GUN_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED, BULLET_COLOR);
+                Bullet rightBullet = new Bullet((int)x + width - GUN_PADDING + GUN_WIDTH / 2, (int)y - GUN_HEIGHT, BULLET_WIDTH, BULLET_HEIGHT, BULLET_SPEED, BULLET_COLOR);
                 this.gameManager.add(leftBullet);
                 this.gameManager.add(rightBullet);
                 SoundManager.playSound(GUN_FIRE_SOUND, 0);

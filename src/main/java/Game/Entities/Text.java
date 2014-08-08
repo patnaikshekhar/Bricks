@@ -14,7 +14,7 @@ public class Text extends GameObject {
     private int value;
     private final Font font;
 
-    public Text(int x, int y, String title, int startValue, Color color, Font font) {
+    public Text(double x, double y, String title, int startValue, Color color, Font font) {
         this.x = x;
         this.y = y;
         this.title = title;
@@ -33,7 +33,7 @@ public class Text extends GameObject {
         String text = title + " : " + String.valueOf(value);
         g.setColor(color);
         g.setFont(font);
-        g.drawString(text, x, y);
+        g.drawString(text, (int)x, (int)y);
     }
 
     @Override

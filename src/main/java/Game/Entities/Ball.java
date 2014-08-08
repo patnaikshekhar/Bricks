@@ -11,7 +11,7 @@ public class Ball extends GameObject {
 
     private final Color color;
 
-    public Ball(int x, int y, int width, int height, double vx, double vy, Color color) {
+    public Ball(double x, double y, int width, int height, double vx, double vy, Color color) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -30,7 +30,7 @@ public class Ball extends GameObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(color);
-        g.fillOval(x, y, width, height);
+        g.fillOval((int)x, (int)y, width, height);
     }
 
     @Override

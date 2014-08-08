@@ -32,9 +32,9 @@ public class Brick extends GameObject {
     @Override
     public void draw(Graphics2D g) {
         g.setColor(borderColor);
-        g.fillRect(x, y, width, height);
+        g.fillRect((int)x, (int)y, width, height);
         g.setColor(color);
-        g.fillRect(x + borderSize, y + borderSize, width - (2 * borderSize), height - (2 * borderSize));
+        g.fillRect((int)x + borderSize, (int)y + borderSize, width - (2 * borderSize), height - (2 * borderSize));
     }
 
     @Override
